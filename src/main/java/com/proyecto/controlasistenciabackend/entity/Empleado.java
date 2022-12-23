@@ -22,11 +22,11 @@ public class Empleado {
     private String contacto;
     private String direccion;
     @Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "America/Lima")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "America/Lima")
     private Date fechaNacimiento;
 
     @Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd" , timezone = "America/Lima")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "America/Lima")
     private Date fechaRegistro;
 
     @ManyToOne
@@ -36,5 +36,4 @@ public class Empleado {
     @JoinColumn(name = "idCargo")
     private Cargo cargo;
     private int estado;
-
 }

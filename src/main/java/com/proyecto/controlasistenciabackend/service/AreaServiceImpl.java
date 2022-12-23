@@ -3,6 +3,8 @@ package com.proyecto.controlasistenciabackend.service;
 import com.proyecto.controlasistenciabackend.entity.Area;
 import com.proyecto.controlasistenciabackend.repository.AreaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,10 +15,19 @@ public class AreaServiceImpl implements AreaService{
 
     @Autowired
     AreaRepository areaRepository;
-
     @Override
     public List<Area> listarTodos() {
         return  areaRepository.findAll();
+    }
+
+    @Override
+    public Optional<Area> buscarAreaPorId(int idArea) {
+        return areaRepository.findById(idArea);
+    }
+
+    @Override
+    public Page<Area> paginas(Pageable pageable) {
+        return areaRepository.findAll(pageable);
     }
 
     @Override

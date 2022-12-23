@@ -3,29 +3,33 @@ package com.proyecto.controlasistenciabackend.controller;
 import com.proyecto.controlasistenciabackend.entity.Empleado;
 import com.proyecto.controlasistenciabackend.service.EmpleadoService;
 import com.proyecto.controlasistenciabackend.util.AppSettings;
+
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
+
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
-    import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.*;
 
-    import java.util.*;
+import java.util.*;
 
-    @RestController
-    @RequestMapping("/api/empleado")
-    @CrossOrigin(origins = AppSettings.URL_CROSS_ORIGIN)
+@RestController
+@RequestMapping("/api/empleado")
+@CrossOrigin(origins = AppSettings.URL_CROSS_ORIGIN)
 public class EmpleadoController {
 
         @Autowired
         EmpleadoService empleadoService;
 
+        // Listar todos los empleados paginados
         @GetMapping("/empleado")
         public ResponseEntity<Page<Empleado>> paginas(@RequestParam(defaultValue = "0") int page,
                                                       @RequestParam(defaultValue = "6") int size,
@@ -34,11 +38,12 @@ public class EmpleadoController {
         ) {
             Page<Empleado> empleado = empleadoService.paginas(PageRequest.of(page, size, Sort.by(order)));
             if (!asc) {
-                empleado = empleadoService.paginas(PageRequest.of(page, size, Sort.by(order).descending()));
+                empleadoService.paginas(PageRequest.of(page, size, Sort.by(order).descending()));
             }
             return new ResponseEntity<Page<Empleado>>(empleado, HttpStatus.OK);
         }
 
+        // Listar todos los empleados POR ID
         @GetMapping("/buscar/{id}")
         public ResponseEntity<Empleado> buscarEmpleado(@PathVariable("id") int idEmpleado) {
            Optional<Empleado> objEmpleado = empleadoService.buscarEmpleadoPorId(idEmpleado);
@@ -48,12 +53,8 @@ public class EmpleadoController {
             Empleado empleado = objEmpleado.get();
             return ResponseEntity.ok(empleado);
         }
-//    @GetMapping("/listar")
-//    public ResponseEntity<List<Empleado>> listarTodos(){
-//        List<Empleado> lista = empleadoService.listarTodos();
-//        return ResponseEntity.ok(lista);
-//    }
 
+        //REGISTRAR EMPLEADO
         @PostMapping("/registrar")
         @ResponseBody
         public ResponseEntity<?> registrar(@Valid @RequestBody Empleado objEmpleado, Errors errors) {
@@ -72,7 +73,7 @@ public class EmpleadoController {
             }
             try {
                 Empleado obj = empleadoService.buscarPorDni(objEmpleado.getDni());
-                if (obj != null) {
+                if (obj == null) {
                     listaMensaje.add("El DNI: " + obj.getDni() + " ya existe");
                 } else {
                     objEmpleado.setFechaRegistro(new Date());
@@ -92,26 +93,58 @@ public class EmpleadoController {
             return ResponseEntity.ok(response);
         }
 
+        //ACTUALIZAR EMPLEADO
         @PutMapping("/actualizar/{id}")
         @ResponseBody
-        public ResponseEntity<Empleado> actualizar(@Valid @RequestBody Empleado empleado, @PathVariable("id") int idEmpleado) {
+        public ResponseEntity<HashMap<String, Object>> actualizar(@Valid @RequestBody Empleado empleado, Errors errors) {
             HashMap<String, Object> response = new HashMap<>();
+            List<String> listaMensaje = new ArrayList<>();
+            response.put("errores", listaMensaje);
+
+            List<ObjectError> lstError = errors.getAllErrors();
+            for (ObjectError objectError : lstError) {
+                objectError.getDefaultMessage();
+                listaMensaje.add(objectError.getDefaultMessage());
+            }
+            if (!CollectionUtils.isEmpty(listaMensaje)) {
+                response.put("errores", listaMensaje);
+                return ResponseEntity.ok(response);
+            }
             try {
-                Optional<Empleado> obj = empleadoService.buscarEmpleadoPorId(idEmpleado);
+                Optional<Empleado> obj = empleadoService.buscarEmpleadoPorId(empleado.getIdEmpleado());
                 if (obj.isPresent()) {
                     Empleado objSalida = empleadoService.actualizarEmpleado(empleado);
                     if (objSalida == null) {
-                        response.put("mensaje","No se actualizó correctamente");
+                        listaMensaje.add("No se actualizó correctamente");
                     } else {
-                        response.put("mensaje","Se actualizó correctamente el ID " + idEmpleado);
+                        listaMensaje.add("Se actualizó correctamente el ID " + empleado.getIdEmpleado());
                     }
                 } else {
-                    response.put("mensaje","No se encontró el ID " + idEmpleado);
+                    listaMensaje.add("No se encontró el ID " + empleado.getIdEmpleado());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                response.put("mensaje","Error al actualizar");
+                listaMensaje.add("Error al actualizar " + e.getMessage());
             }
-            return ResponseEntity.ok(empleado);
+            return ResponseEntity.ok(response);
         }
+        //ELIMINAR EMPLEADO
+        @DeleteMapping("/eliminar/{id}")
+
+        public ResponseEntity<HashMap<String,Object>> eliminar(@PathVariable("id") int idEmpleado){
+            HashMap<String,Object> response = new HashMap<>();
+            try{
+                Optional<Empleado> objEmpleado = empleadoService.buscarEmpleadoPorId(idEmpleado);
+                if(objEmpleado.isPresent()){
+                  empleadoService.eliminarEmpleado(idEmpleado);
+                  response.put("mensaje","Se eliminó correctamente");
+                }else{
+                    response.put("mensaje","No se encontró el ID "+ idEmpleado);
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+                response.put("mensaje","Error al eliminar "+ e.getMessage());
+            }
+            return ResponseEntity.ok(response);
         }
+    }
