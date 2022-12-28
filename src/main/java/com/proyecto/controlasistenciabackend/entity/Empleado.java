@@ -29,6 +29,7 @@ public class Empleado {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "America/Lima")
     private Date fechaRegistro;
 
+    private double tarifa_hora;
     @ManyToOne
     @JoinColumn(name = "idArea")
     private Area area;

@@ -7,7 +7,7 @@ import com.proyecto.controlasistenciabackend.service.AreaService;
 import com.proyecto.controlasistenciabackend.util.AppSettings;
 import jakarta.validation.Valid;
 import lombok.Getter;
-import org.apache.coyote.Response;
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Page;
@@ -43,7 +43,8 @@ public class AreaController {
         if(!objArea.isPresent()){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(objArea.get());
+        Area area = objArea.get();
+        return  ResponseEntity.ok(area);
     }
     @GetMapping("/area")
     public ResponseEntity<Page<Area>> paginas(  @RequestParam(defaultValue = "0") int page,
@@ -108,4 +109,17 @@ public class AreaController {
         }
         return ResponseEntity.ok(response);
     }
+    @DeleteMapping("/eliminar/{id}")
+    public ResponseEntity<?> eliminar(@PathVariable("id") int idArea){
+        HashMap<String,Object> salida = new HashMap<>();
+        Optional<Area> objArea = areaService.buscarAreaPorId(idArea);
+        if(objArea.isPresent()){
+            areaService.eliminarArea(idArea);
+            salida.put("mensaje","Se elimino correctament el ID " + idArea);
+        }else{
+            salida.put("mensaje","No se encontro el ID " + idArea);
+        }
+        return ResponseEntity.ok(salida);
+    }
+
 }

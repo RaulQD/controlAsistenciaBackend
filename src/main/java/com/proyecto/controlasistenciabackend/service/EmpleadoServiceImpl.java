@@ -2,6 +2,8 @@ package com.proyecto.controlasistenciabackend.service;
 
 import com.proyecto.controlasistenciabackend.entity.Cargo;
 import com.proyecto.controlasistenciabackend.entity.Empleado;
+import com.proyecto.controlasistenciabackend.repository.AreaRepository;
+import com.proyecto.controlasistenciabackend.repository.CargoRepository;
 import com.proyecto.controlasistenciabackend.repository.EmpleadoRepository;
 import com.proyecto.controlasistenciabackend.util.Constantes;
 import com.proyecto.controlasistenciabackend.util.FunctionExcelUtil;
@@ -29,10 +31,14 @@ public class EmpleadoServiceImpl implements EmpleadoService {
     @Autowired
     EmpleadoRepository empleadoRepository;
 
-    private static String[] COLUMNAS_tema = { "NOMBRES", "APELLIDOS","DNI", "CONTACTO", "CORREO",  "DIRECCIÓN", "FECHA NACIMIENTO","FECHA REGISTRO", "AREA", "CARGO"};
+    private static String[] COLUMNAS_tema = { "NOMBRES", "APELLIDOS","DNI", "CONTACTO", "CORREO",  "DIRECCIÓN", "FECHA NACIMIENTO","FECHA REGISTRO"};
     private static CellType[][] TIPO_DATOS_tema = {
-            {CellType.STRING}, {CellType.STRING},{CellType.STRING, CellType.NUMERIC}, {CellType.STRING, CellType.NUMERIC}, {CellType.STRING}, {CellType.STRING}, {CellType.STRING}, {CellType.STRING}, {CellType.STRING}, {CellType.STRING},
-    };
+            {CellType.STRING}, {CellType.STRING},{CellType.STRING, CellType.NUMERIC}, {CellType.STRING, CellType.NUMERIC}, {CellType.STRING}, {CellType.STRING}, {CellType.STRING}, {CellType.STRING}};
+    @Autowired
+    private AreaRepository areaRepository;
+    @Autowired
+    private CargoRepository cargoRepository;
+
     @Transactional
     @Override
     public Map<String, Object> generarExcel(MultipartFile file) {
@@ -104,14 +110,14 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                                 celdaFechaRegistro = FunctionUtil.eliminaEspacios(celdaFechaRegistro);
                                 System.out.println("celdaFechaRegistro: " + celdaFechaRegistro);
                                 break;
-                            case 9:
-                                celdaAreaName = cell.getStringCellValue().trim();
-                                celdaAreaName = FunctionUtil.eliminaEspacios(celdaAreaName);
-                                break;
-                            case 10:
-                                celdaCargoName = cell.getStringCellValue().trim();
-                                celdaCargoName = FunctionUtil.eliminaEspacios(celdaCargoName);
-                                break;
+//                            case 9:
+//                                celdaAreaName = cell.getStringCellValue().trim();
+//                                celdaAreaName = FunctionUtil.eliminaEspacios(celdaAreaName);
+//                                break;
+//                            case 10:
+//                                celdaCargoName = cell.getStringCellValue().trim();
+//                                celdaCargoName = FunctionUtil.eliminaEspacios(celdaCargoName);
+//                                break;
                         }
                         Empleado objEmpleado = new Empleado();
                         objEmpleado.setNombre(celdaNombre);
@@ -122,8 +128,8 @@ public class EmpleadoServiceImpl implements EmpleadoService {
                         objEmpleado.setDireccion(celdaDireccion);
                         objEmpleado.setFechaNacimiento(FunctionUtil.getFechaDate(celdaFechaNacimiento));
                         objEmpleado.setFechaRegistro(FunctionUtil.getFechaDate(celdaFechaRegistro));
-//                        objEmpleado.setArea(celdaAreaName);
-//                        objEmpleado.setCargo(celdaCargoName);
+//                        objEmpleado.setArea(areaRepository.findbyName(celdaAreaName));
+//                        objEmpleado.setCargo(cargoRepository.findbyName(celdaCargoName));
 
                     }
                 }

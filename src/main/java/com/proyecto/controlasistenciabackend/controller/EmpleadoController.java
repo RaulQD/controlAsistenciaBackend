@@ -73,9 +73,9 @@ public class EmpleadoController {
             }
             try {
                 Empleado obj = empleadoService.buscarPorDni(objEmpleado.getDni());
-                if (obj == null) {
+                if (obj != null) {
                     listaMensaje.add("El DNI: " + obj.getDni() + " ya existe");
-                } else {
+                } else {    
                     objEmpleado.setFechaRegistro(new Date());
                     objEmpleado.setEstado(1);
                     objEmpleado.setIdEmpleado(0);
@@ -130,7 +130,6 @@ public class EmpleadoController {
         }
         //ELIMINAR EMPLEADO
         @DeleteMapping("/eliminar/{id}")
-
         public ResponseEntity<HashMap<String,Object>> eliminar(@PathVariable("id") int idEmpleado){
             HashMap<String,Object> response = new HashMap<>();
             try{
