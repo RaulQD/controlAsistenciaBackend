@@ -32,7 +32,7 @@ public class EmpleadoController {
         // Listar todos los empleados paginados
         @GetMapping("/empleado")
         public ResponseEntity<Page<Empleado>> paginas(@RequestParam(defaultValue = "0") int page,
-                                                      @RequestParam(defaultValue = "6") int size,
+                                                      @RequestParam(defaultValue = "6   ") int size,
                                                       @RequestParam(defaultValue = "idEmpleado") String order,
                                                       @RequestParam(defaultValue = "true") boolean asc
         ) {
