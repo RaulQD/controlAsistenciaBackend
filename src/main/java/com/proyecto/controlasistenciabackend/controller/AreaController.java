@@ -89,37 +89,25 @@ public class AreaController {
         return ResponseEntity.ok(response);
     }
     @PutMapping("/actualizar/{id}")
-    public ResponseEntity<?> actualizar(@Valid @RequestBody Area area){
+    public ResponseEntity<?> actualizar(@Valid @RequestBody Area area) {
         HashMap<String, Object> response = new HashMap<>();
-        try{
+        try {
             Optional<Area> objArea = areaService.buscarAreaPorId(area.getIdArea());
-            if(objArea.isPresent()) {
+            if (objArea.isPresent()) {
                 Area objSalida = areaService.actualizarArea(area);
                 if (objSalida == null) {
                     response.put("mensaje", "No se actualizo correctamente");
                 } else {
                     response.put("mensaje", "Se actualizo correctamente el ID " + objSalida.getIdArea());
                 }
-            }else{
+            } else {
                 response.put("mensaje", "No se encontro el ID " + area.getIdArea());
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            response.put("mensaje","Error al actualizar");
+            response.put("mensaje", "Error al actualizar");
         }
         return ResponseEntity.ok(response);
-    }
-    @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable("id") int idArea){
-        HashMap<String,Object> salida = new HashMap<>();
-        Optional<Area> objArea = areaService.buscarAreaPorId(idArea);
-        if(objArea.isPresent()){
-            areaService.eliminarArea(idArea);
-            salida.put("mensaje","Se elimino correctament el ID " + idArea);
-        }else{
-            salida.put("mensaje","No se encontro el ID " + idArea);
-        }
-        return ResponseEntity.ok(salida);
     }
 
 }

@@ -17,7 +17,9 @@ public class Empleado {
     private int idEmpleado;
     private String nombre;
     private String apellido;
+    @Column(nullable = false, unique = true)
     private String dni;
+    @Column(nullable = false, unique = true)
     private String correo;
     private String contacto;
     private String direccion;
@@ -30,6 +32,7 @@ public class Empleado {
     private Date fechaRegistro;
 
     private double tarifa_hora;
+    private String foto;
     @ManyToOne
     @JoinColumn(name = "idArea")
     private Area area;
