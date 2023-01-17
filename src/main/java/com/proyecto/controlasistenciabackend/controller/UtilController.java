@@ -2,8 +2,10 @@ package com.proyecto.controlasistenciabackend.controller;
 
 import com.proyecto.controlasistenciabackend.entity.Area;
 import com.proyecto.controlasistenciabackend.entity.Cargo;
+import com.proyecto.controlasistenciabackend.entity.Rol;
 import com.proyecto.controlasistenciabackend.service.AreaService;
 import com.proyecto.controlasistenciabackend.service.CargoService;
+import com.proyecto.controlasistenciabackend.service.RolService;
 import com.proyecto.controlasistenciabackend.util.AppSettings;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +23,10 @@ import java.util.List;
 public class UtilController {
     @Autowired
     AreaService areaService;
-
+    @Autowired
+    RolService rolService;
     @Autowired
     CargoService cargoService;
-
-
     @GetMapping("/areas")
     public ResponseEntity<List<Area>> listarArea(){
         List<Area> list = areaService.listarTodos();
@@ -34,6 +35,11 @@ public class UtilController {
     @GetMapping("/cargos")
     public ResponseEntity<List<Cargo>> listarCargo(){
         List<Cargo> list = cargoService.listarTodos();
+        return ResponseEntity.ok(list);
+    }
+    @GetMapping("/roles")
+    public ResponseEntity<List<Rol>> listarRoles(){
+        List<Rol> list = rolService.listarRoles();
         return ResponseEntity.ok(list);
     }
 }

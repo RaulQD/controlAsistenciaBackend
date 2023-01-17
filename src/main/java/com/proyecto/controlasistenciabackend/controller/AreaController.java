@@ -1,15 +1,10 @@
 package com.proyecto.controlasistenciabackend.controller;
 
 import com.proyecto.controlasistenciabackend.entity.Area;
-import com.proyecto.controlasistenciabackend.repository.AreaRepository;
-import com.proyecto.controlasistenciabackend.repository.EmpleadoRepository;
 import com.proyecto.controlasistenciabackend.service.AreaService;
 import com.proyecto.controlasistenciabackend.util.AppSettings;
 import jakarta.validation.Valid;
-import lombok.Getter;
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

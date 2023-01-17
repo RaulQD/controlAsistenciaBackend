@@ -1,22 +1,25 @@
 package com.proyecto.controlasistenciabackend.entity;
 
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.core.serializer.Deserializer;
 
 import java.io.Serializable;
+import java.util.List;
+
 
 @Entity
 @Getter
 @Setter
-@Table(name="tb_area")
-public class Area {
+@Table(name="area")
+public class Area implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idArea;
-    private String nombre;
+    private String area;
+
 
 }

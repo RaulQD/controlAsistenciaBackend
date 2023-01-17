@@ -1,8 +1,6 @@
 package com.proyecto.controlasistenciabackend.service;
 
 import com.proyecto.controlasistenciabackend.entity.Area;
-import com.proyecto.controlasistenciabackend.entity.Empleado;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
