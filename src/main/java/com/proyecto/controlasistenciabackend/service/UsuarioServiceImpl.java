@@ -56,6 +56,16 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuarioRepository.findById(idEmpleado);
     }
 
+    @Override
+    public boolean existsByUsuario(String usuario) {
+        return usuarioRepository.existsByUsuario(usuario);
+    }
+
+    @Override
+    public boolean existsByContrasena(String contrasena) {
+        return usuarioRepository.existsByContrasena(contrasena);
+    }
+
 //    @Override
 //    public boolean existsByUsuario(String usuario) {
 //        return false;

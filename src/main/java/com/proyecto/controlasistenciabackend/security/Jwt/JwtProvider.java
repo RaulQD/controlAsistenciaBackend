@@ -23,7 +23,6 @@ public class JwtProvider{
 
     @Value("${jwt.secret}")
     private String secret;
-
     @Value("${jwt.secret}")
     private String secreat_validation;
     @Value("${jwt.expiration}")
@@ -44,6 +43,7 @@ public class JwtProvider{
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
     /* A method that returns a key for signing the token. */
     public String getUsuarioFromToken(String token){
         return Jwts.parserBuilder().setSigningKey(getSigningKey(secret)).build().parseClaimsJws(token).getBody().getSubject();

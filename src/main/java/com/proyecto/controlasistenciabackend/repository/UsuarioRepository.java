@@ -14,10 +14,12 @@ import java.util.Optional;
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
+    boolean existsByUsuario(String usuario);
+    boolean existsByContrasena(String contrasena);
     public abstract Usuario findByDni(String dni);
 
     @Query("select e from Usuario e where e.nombre like ?1 ")
     public List<Usuario> listarPorNombre(String nombre);
 
-    Optional<Usuario> findByUsuario(String usuario);
+    public Usuario findByUsuario(String usuario);
 }

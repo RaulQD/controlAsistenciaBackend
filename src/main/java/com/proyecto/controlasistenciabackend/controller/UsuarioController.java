@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/usuario")
+@RequestMapping("/api/empleado")
 @CrossOrigin(origins = AppSettings.URL_CROSS_ORIGIN)
 public class UsuarioController {
 
@@ -137,31 +137,31 @@ public class UsuarioController {
         }
     }
      //ACTUALIZAR EMPLEADO
-        @PutMapping("/actualizar/{id}")
-        @ResponseBody
-        public ResponseEntity<HashMap<String, Object>> actualizar(@RequestBody Usuario usuario) {
-            HashMap<String, Object> response = new HashMap<>();
-            try {
-                Optional<Usuario> obj = usuarioService.buscarEmpleadoPorId(usuario.getIdUsuario());
-                if (obj.isPresent()) {
-                    Usuario objSalida = usuarioService.actualizarEmpleado(usuario);
-                    if (objSalida == null) {
-                        response.put("mensaje", "No se actualizó correctamente");
-                        return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-                    } else {
-                        response.put("mensaje","Se actualizó correctamente el ID " + usuario.getIdUsuario());
-                        return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.OK);
-                    }
+    @PutMapping("/actualizar/{id}")
+    @ResponseBody
+    public ResponseEntity<HashMap<String, Object>> actualizar(@RequestBody Usuario usuario) {
+        HashMap<String, Object> response = new HashMap<>();
+        try {
+            Optional<Usuario> obj = usuarioService.buscarEmpleadoPorId(usuario.getIdUsuario());
+            if (obj.isPresent()) {
+                Usuario objSalida = usuarioService.actualizarEmpleado(usuario);
+                if (objSalida == null) {
+                    response.put("mensaje", "No se actualizó correctamente");
+                    return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
                 } else {
-                    response.put("mensaje","No se encontró el ID " + usuario.getIdUsuario());
-                    return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.NOT_FOUND);
+                    response.put("mensaje","Se actualizó correctamente el ID " + usuario.getIdUsuario());
+                    return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.OK);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.put("mensaje","Error al actualizar " + e.getMessage());
+            } else {
+                response.put("mensaje","No se encontró el ID " + usuario.getIdUsuario());
+                return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.NOT_FOUND);
             }
-            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("mensaje","Error al actualizar " + e.getMessage());
         }
+        return ResponseEntity.ok(response);
+    }
         //ELIMINAR EMPLEADO
 
 //        @PostMapping("/upload")

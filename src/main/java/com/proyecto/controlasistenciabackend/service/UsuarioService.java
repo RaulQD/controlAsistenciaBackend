@@ -28,5 +28,7 @@ public interface UsuarioService {
     //TODO:VALIDACIONES
     public abstract Optional<Usuario> buscarEmpleadoPorId(int idUsuario);
 
+    boolean existsByUsuario(String usuario);
+    boolean existsByContrasena(String contrasena);
 
 }
