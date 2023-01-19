@@ -26,10 +26,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     public List<Usuario> listarEmpleados() {
         return usuarioRepository.findAll();
     }
-    @Override
-    public Usuario buscarPorDni(String dni) {
-        return usuarioRepository.findByDni(dni);
-    }
 
 
     @Override
@@ -57,24 +53,15 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public boolean existsByUsuario(String usuario) {
-        return usuarioRepository.existsByUsuario(usuario);
+    public Usuario findByUsuario(String usuario) {
+        return usuarioRepository.findByUsuario(usuario);
     }
+
 
     @Override
-    public boolean existsByContrasena(String contrasena) {
-        return usuarioRepository.existsByContrasena(contrasena);
+    public Optional<Usuario> buscarPorDni(String dni) {
+        return usuarioRepository.findByDni(dni);
     }
-
-//    @Override
-//    public boolean existsByUsuario(String usuario) {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean existsByEmail(String correo) {
-//        return false;
-//    }
 
 
     @Override

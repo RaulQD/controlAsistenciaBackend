@@ -14,7 +14,7 @@ public interface UsuarioService {
 
     //TODO:BUSCADORES
     public abstract List<Usuario> listarPorNombre(String nombre);
-    public abstract Usuario buscarPorDni(String dni);
+    public abstract Optional<Usuario> buscarPorDni(String dni);
 
     //TODO:INSERTADORES
     public Usuario insertarUsuario(Usuario usuario);
@@ -27,8 +27,6 @@ public interface UsuarioService {
 
     //TODO:VALIDACIONES
     public abstract Optional<Usuario> buscarEmpleadoPorId(int idUsuario);
-
-    boolean existsByUsuario(String usuario);
-    boolean existsByContrasena(String contrasena);
+    public abstract Usuario findByUsuario(String usuario);
 
 }

@@ -5,10 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "usuario")
@@ -44,9 +41,9 @@ public class Usuario {
     @JoinColumn(name = "id_cargo" )
     private Cargo cargo;
     private String estado;
-    @Column(unique = true)
     private String usuario;
     private String contrasena;
+
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "usuario_has_rol",
@@ -54,10 +51,14 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "id_rol"))
     private Set<Rol> roles = new HashSet<>();
 
+    @Transient
+    private String nombreCompleto;
     public Usuario() {
+
     }
 
-    public Usuario(String nombre, String apellido, String dni, String correo, String contacto, String direccion, Date fechaNacimiento, Date fechaRegistro, double tarifa, Area area, Cargo cargo, String estado, String usuario, String contrasena) {
+    public Usuario(int idUsuario, String nombre, String apellido, String dni, String correo, String contacto, String direccion, Date fechaNacimiento, Date fechaRegistro, double tarifa, Area area, Cargo cargo, String estado, String usuario, String contrasena) {
+        this.idUsuario = idUsuario;
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;

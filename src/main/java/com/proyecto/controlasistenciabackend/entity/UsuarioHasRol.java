@@ -14,7 +14,7 @@ public class UsuarioHasRol {
     private UsuarioHasRolPK usuarioHasRolPk;
 
     @ManyToOne
-    @JoinColumn(name = "idUsuario", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "idUsuario", insertable = false, updatable = false)
     private Usuario usuario;
 
     @ManyToOne

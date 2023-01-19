@@ -105,30 +105,38 @@ public class UsuarioController {
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarUsuario(@RequestBody Usuario usuario) {
         HashMap<String, Object> salida = new HashMap<>();
+
         try {
-            Usuario obj = usuarioService.buscarPorDni(usuario.getDni());
-            if (obj != null) {
+            Optional<Usuario> objDni = usuarioService.buscarPorDni(usuario.getDni());
+            if (objDni.isEmpty()) {
+                 Usuario objUser = usuarioService.findByUsuario(usuario.getUsuario());
+                if (objUser == null) {
+                        usuario.setFechaRegistro(new Date());
+                        usuario.setEstado("Activo");
+                        usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
+                        Set<Rol> roles = new HashSet<>();
+                        roles.add(rolService.findByRoles("ROL_USER").get());
+                        if (usuario.getRoles().contains("admin")) {
+                            roles.add(rolService.findByRoles("ROL_ADMIN").get());
+                        }
+                        usuario.setRoles(roles);
+                        Usuario objUsuario = usuarioService.insertarUsuario(usuario);
+                        if (objUsuario == null) {
+                            salida.put("mensaje", "Error al registrar el empleado");
+                            return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.BAD_REQUEST);
+
+                        } else {
+                            salida.put("mensaje", "El empleado  con el ID: " + usuario.getIdUsuario() + " ha sido registrado con éxito");
+                            salida.put("empleado", usuario);
+                            return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.CREATED);
+                        }
+                } else {
+                    salida.put("mensaje", "El usuario: " + usuario.getUsuario() + " ya existe.");
+                    return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.CONFLICT);
+                }
+            } else {
                 salida.put("mensaje", "El empleado con el DNI: " + usuario.getDni() + " ya existe.");
                 return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.CONFLICT);
-            } else {
-                    usuario.setFechaRegistro(new Date());
-                    usuario.setEstado("Activo");
-                    usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
-                    Set<Rol> roles = new HashSet<>();
-                    roles.add(rolService.findByRoles("ROL_USER").get());
-                    if(usuario.getRoles().contains("admin")){
-                        roles.add(rolService.findByRoles("ROL_ADMIN").get());
-                    }
-                    usuario.setRoles(roles);
-                    Usuario objUsuario = usuarioService.insertarUsuario(usuario);
-                if(objUsuario != null ){
-                    salida.put("mensaje", "El empleado  con el ID: " + usuario.getIdUsuario() + " ha sido registrado con éxito");
-                    salida.put("empleado", usuario);
-                    return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.CREATED);
-                }else {
-                    salida.put("mensaje", "Error al registrar el empleado");
-                    return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.BAD_REQUEST);
-                }
             }
         } catch (DataAccessException e) {
             salida.put("mensaje", "Error al registrar el empleado");
@@ -136,6 +144,36 @@ public class UsuarioController {
             return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+//        try {
+//            Usuario obj = usuarioService.buscarPorDni(usuario.getDni());
+//            if (obj != null) {
+//                salida.put("mensaje", "El empleado con el DNI: " + usuario.getDni() + " ya existe.");
+//                return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.CONFLICT);
+//            } else {
+//                    usuario.setFechaRegistro(new Date());
+//                    usuario.setEstado("Activo");
+//                    usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
+//                    Set<Rol> roles = new HashSet<>();
+//                    roles.add(rolService.findByRoles("ROL_USER").get());
+//                    if(usuario.getRoles().contains("admin")){
+//                        roles.add(rolService.findByRoles("ROL_ADMIN").get());
+//                    }
+//                    usuario.setRoles(roles);
+//                    Usuario objUsuario = usuarioService.insertarUsuario(usuario);
+//                if(objUsuario != null ){
+//                    salida.put("mensaje", "El empleado  con el ID: " + usuario.getIdUsuario() + " ha sido registrado con éxito");
+//                    salida.put("empleado", usuario);
+//                    return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.CREATED);
+//                }else {
+//                    salida.put("mensaje", "Error al registrar el empleado");
+//                    return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.BAD_REQUEST);
+//                }
+//            }
+//        } catch (DataAccessException e) {
+//            salida.put("mensaje", "Error al registrar el empleado");
+//            salida.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+//            return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
      //ACTUALIZAR EMPLEADO
     @PutMapping("/actualizar/{id}")
     @ResponseBody

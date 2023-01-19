@@ -15,7 +15,7 @@ public class UsuarioHasRolPK implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private int idUsuario;
-    private int idRol;
+    private int id_usuario;
+    private int id_rol;
 
 }

@@ -34,8 +34,7 @@ public class AuthController {
     UsuarioService usuarioService;
 
     @PostMapping("/login")
-    public ResponseEntity<JwtDto> login(@Valid @RequestBody LoginUsuario loginUsuario){
-
+    public ResponseEntity<JwtDto> login(@Valid @RequestBody LoginUsuario loginUsuario) {
         logger.info("Iniciando el método login" + loginUsuario.getUsuario());
         logger.info("Iniciando el metodo contraseña" + loginUsuario.getContrasena());
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUsuario.getUsuario(), loginUsuario.getContrasena()));
@@ -46,7 +45,7 @@ public class AuthController {
         logger.info("Fin de generación de token" + jwt);
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         logger.info("Fin de generación de token" + userPrincipal.toString());
-        JwtDto jwtDto = new JwtDto(jwt, userPrincipal.getUsername(), userPrincipal.getNombre(), userPrincipal.getAuthorities());
+        JwtDto jwtDto = new JwtDto(jwt, userPrincipal.getUsername(), userPrincipal.getNombre(), userPrincipal.getAuthorities() );
 
         return new ResponseEntity<>(jwtDto, HttpStatus.OK);
     }

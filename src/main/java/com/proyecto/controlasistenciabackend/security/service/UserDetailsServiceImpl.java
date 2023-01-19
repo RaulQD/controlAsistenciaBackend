@@ -26,12 +26,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Usuario usuario =usuarioRepository.findByUsuario(username);
-        if(usuario == null){
-            logger.error("Error en el login : no existe el usuario '" + username + "' en el sistema");
-            throw new UsernameNotFoundException("Error en el login : no existe el usuario '" + username + "' en el sistema");
-        }
-        List<GrantedAuthority> authorities = usuario.getRoles().stream().map(
-                rol -> new SimpleGrantedAuthority(rol.getRoles())).collect(Collectors.toList());
-        return new UserPrincipal(usuario.getNombre(),usuario.getUsuario(), usuario.getContrasena(), authorities );
+       return UserPrincipal.build(usuario);
     }
 }

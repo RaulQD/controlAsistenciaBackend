@@ -1,29 +1,29 @@
 package com.proyecto.controlasistenciabackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.List;
 
 
+
 @Entity
 @Table(name = "rol")
 @Getter
 @Setter
-public class Rol implements Serializable{
+@NoArgsConstructor
+public class Rol{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idRol;
     private String roles;
 
-    public Rol() {
-    }
-
-    public Rol(int idRol, String roles) {
-        this.idRol = idRol;
+    public Rol(String roles) {
         this.roles = roles;
     }
 }

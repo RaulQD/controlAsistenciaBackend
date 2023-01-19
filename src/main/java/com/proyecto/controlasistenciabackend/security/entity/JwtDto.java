@@ -9,11 +9,14 @@ import java.util.Collection;
 
 @ToString
 public class JwtDto {
+
+
     private String token;
     private String bearer = "Bearer ";
     private String nombre;
     private String usuario;
     private Collection<? extends GrantedAuthority> authorities;
+
 
     public JwtDto(String token, String usuario, String nombre, Collection<? extends GrantedAuthority> authorities) {
         this.token = token;
