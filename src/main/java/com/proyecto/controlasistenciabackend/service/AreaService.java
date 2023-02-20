@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface AreaService {
 
-    public abstract List<Area> listarTodos();
+    public abstract List<Area> findAllAreas();
     public abstract Optional<Area> buscarAreaPorId(int idArea);
     public Page<Area> paginas(Pageable pageable);
     public abstract Area insertarArea(Area area);

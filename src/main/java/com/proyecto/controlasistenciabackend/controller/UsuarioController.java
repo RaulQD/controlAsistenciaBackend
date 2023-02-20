@@ -1,11 +1,10 @@
 package com.proyecto.controlasistenciabackend.controller;
 
-import com.proyecto.controlasistenciabackend.entity.Rol;
 import com.proyecto.controlasistenciabackend.entity.Usuario;
-import com.proyecto.controlasistenciabackend.service.RolService;
 import com.proyecto.controlasistenciabackend.service.UsuarioService;
 import com.proyecto.controlasistenciabackend.util.AppSettings;
 
+import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,10 +32,6 @@ public class UsuarioController {
     private static Logger log = LoggerFactory.getLogger(UsuarioController.class);
         @Autowired
         UsuarioService usuarioService;
-        @Autowired
-        RolService rolService;
-        @Autowired
-        PasswordEncoder passwordEncoder;
 
     @GetMapping("/listar")
     public ResponseEntity<List<Usuario>> listarTodos(){
@@ -43,43 +39,59 @@ public class UsuarioController {
         return ResponseEntity.ok(salida);
     }
     // Listar todos los empleados paginados
-    @GetMapping("/empleados/page")
-    public ResponseEntity<Page<Usuario>> listarEmpleadosPaginados(@RequestParam(defaultValue = "0") int page,
-                                                                  @RequestParam(defaultValue = "10") int size,
-                                                                  @RequestParam(defaultValue = "idEmpleado") String order)
-    {
-        Page<Usuario> empleado = usuarioService.paginas(PageRequest.of(page, size, Sort.by(order)));
-
-        return new ResponseEntity<Page<Usuario>>(empleado, HttpStatus.OK);
+//    @GetMapping("/empleados/page")
+//    public ResponseEntity<Page<Usuario>> listarEmpleadosPaginados(@RequestParam(defaultValue = "0") int page,
+//                                                                  @RequestParam(defaultValue = "10") int size,
+//                                                                  @RequestParam(defaultValue = "idEmpleado") String order)
+//    {
+//        Page<Usuario> empleado = usuarioService.paginas(PageRequest.of(page, size, Sort.by(order)));
+//
+//        return new ResponseEntity<Page<Usuario>>(empleado, HttpStatus.OK);
+//    }
+    //LISTAR TODOS LOS EMPLEADOS PAGINADOS
+    @GetMapping("/empleados/page/{page}")
+    public Page<Usuario> listarEmpleadosPaginados(@PathVariable Integer page){
+        Pageable pageable = PageRequest.of(page, 8, Sort.by("idUsuario"));
+        return usuarioService.paginas(pageable);
     }
 
     // Listar todos los empleados POR ID
     @GetMapping("/buscar/{id}")
     public ResponseEntity<?> buscarEmpleado(@PathVariable("id") int idEmpleado) {
         HashMap<String, Object> response = new HashMap<>();
-        Optional<Usuario> objEmpleado = usuarioService.buscarEmpleadoPorId(idEmpleado);
-        if (!objEmpleado.isPresent()) {
-            response.put("mensaje", "El empleado con el ID: " + idEmpleado + " no existe en la base de datos");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        try{
+            Usuario objusuario = usuarioService.buscarEmpleadoPorId(idEmpleado);
+            if(objusuario == null){
+                response.put("mensaje","El empleado con el ID: " + idEmpleado + " no existe en la base de datos");
+                return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.NOT_FOUND);
+            }else{
+                return new ResponseEntity<Usuario>(objusuario, HttpStatus.OK);
+            }
+        }catch(DataAccessException e){
+            response.put("mensaje","Error al realizar la consulta en la base de datos");
+            response.put("error",e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        response.put("mensaje", "Empleado encontrado");
-        Usuario usuario = objEmpleado.get();
-        return ResponseEntity.status(HttpStatus.OK).body(usuario);
     }
     //BUSCAR POR NOMBRE
 //    @GetMapping("/buscarNombre/{nombre}")
-//    public ResponseEntity<List<Empleado>> buscarPorNombre(@PathVariable("nombre") String nombre) {
-//        List<Empleado> lista = null;
+//    public ResponseEntity<List<Usuario>> buscarPorNombre(@PathVariable("nombre") String nombre) {
+//        HashMap<String,Object> response = new HashMap<>();
 //        try{
-//            if(nombre.equals("todos")){
-//                lista = empleadoService.listarPorNombre("%");
-//            }else{
-//                lista = empleadoService.listarPorNombre("%" + nombre + "%");
-//            }
-//        }catch(Exception e){
-//            log.error("Error al buscar por nombre: " + e.getMessage());
+//            List<Usuario> lista = usuarioService.listarPorNombre("%"+nombre+"%");
+//        if(CollectionUtils.isEmpty(lista)){
+//            response.put("mensaje","No se encontraron empleados con el nombre: " + nombre);
+//            return new ResponseEntity<List<Usuario>>(HttpStatus.NOT_FOUND);
+//        }else{
+//            response.put("mensaje","Se encontraron " + lista.size() + " empleados con el nombre: " + nombre + " en la base de datos");
+//            response.put("empleado",lista);
+//            return new ResponseEntity<List<Usuario>>(lista, HttpStatus.OK);
 //        }
-//        return ResponseEntity.status(HttpStatus.OK).body(lista);
+//        }catch(Exception e){
+//            e.printStackTrace();
+//            response.put("mensaje","Error al listar empleados por nombre");
+//            return new ResponseEntity<List<Usuario>>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
 //    }
     @GetMapping("/buscarPorNombre")
     public ResponseEntity<HashMap<String, Object>> listarPorNombre(@RequestParam(name = "nombre", required = false,defaultValue = "") String nombre){
@@ -91,7 +103,7 @@ public class UsuarioController {
                 return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.NOT_FOUND);
             }else {
                 response.put("empleado", lista);
-                response.put("mensaje", "Existen " + lista.size() + " registros para mostrar");
+                response.put("mensaje", "Existe " + lista.size() + " registros para mostrar");
                 return  new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.OK);
             }
         }catch(Exception e){
@@ -105,35 +117,28 @@ public class UsuarioController {
     @PostMapping("/registrar")
     public ResponseEntity<?> registrarUsuario(@RequestBody Usuario usuario) {
         HashMap<String, Object> salida = new HashMap<>();
-
         try {
             Optional<Usuario> objDni = usuarioService.buscarPorDni(usuario.getDni());
-            if (objDni.isEmpty()) {
-                 Usuario objUser = usuarioService.findByUsuario(usuario.getUsuario());
-                if (objUser == null) {
-                        usuario.setFechaRegistro(new Date());
-                        usuario.setEstado("Activo");
-                        usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
-                        Set<Rol> roles = new HashSet<>();
-                        roles.add(rolService.findByRoles("ROL_USER").get());
-                        if (usuario.getRoles().contains("admin")) {
-                            roles.add(rolService.findByRoles("ROL_ADMIN").get());
-                        }
-                        usuario.setRoles(roles);
-                        Usuario objUsuario = usuarioService.insertarUsuario(usuario);
-                        if (objUsuario == null) {
-                            salida.put("mensaje", "Error al registrar el empleado");
-                            return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.BAD_REQUEST);
-
-                        } else {
-                            salida.put("mensaje", "El empleado  con el ID: " + usuario.getIdUsuario() + " ha sido registrado con éxito");
-                            salida.put("empleado", usuario);
-                            return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.CREATED);
-                        }
-                } else {
-                    salida.put("mensaje", "El usuario: " + usuario.getUsuario() + " ya existe.");
-                    return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.CONFLICT);
-                }
+                if (objDni.isEmpty()) {
+                    usuario.setFechaRegistro(new Date());
+                    usuario.setEstado("Activo");
+                    usuario.setIdUsuario(0);
+//                    usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
+//                    Set<Rol> roles = new HashSet<>();
+//                    roles.add(rolService.findByRolName(RolName.ROLE_USER).get());
+//                    if (usuario.getRoles().contains("admin")) {
+//                        roles.add(rolService.findByRolName(RolName.ROLE_ADMIN).get());
+//                    }
+//                    usuario.setRoles(roles);
+                    Usuario objUsuario = usuarioService.insertarUsuario(usuario);
+                    if (objUsuario != null) {
+                        salida.put("mensaje", "El empleado  con el ID: " + usuario.getIdUsuario() + " ha sido registrado con éxito");
+                        salida.put("empleado", usuario);
+                        return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.CREATED);
+                    } else {
+                        salida.put("mensaje", "Error al registrar el empleado");
+                        return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.BAD_REQUEST);
+                    }
             } else {
                 salida.put("mensaje", "El empleado con el DNI: " + usuario.getDni() + " ya existe.");
                 return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.CONFLICT);
@@ -144,54 +149,25 @@ public class UsuarioController {
             return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-//        try {
-//            Usuario obj = usuarioService.buscarPorDni(usuario.getDni());
-//            if (obj != null) {
-//                salida.put("mensaje", "El empleado con el DNI: " + usuario.getDni() + " ya existe.");
-//                return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.CONFLICT);
-//            } else {
-//                    usuario.setFechaRegistro(new Date());
-//                    usuario.setEstado("Activo");
-//                    usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
-//                    Set<Rol> roles = new HashSet<>();
-//                    roles.add(rolService.findByRoles("ROL_USER").get());
-//                    if(usuario.getRoles().contains("admin")){
-//                        roles.add(rolService.findByRoles("ROL_ADMIN").get());
-//                    }
-//                    usuario.setRoles(roles);
-//                    Usuario objUsuario = usuarioService.insertarUsuario(usuario);
-//                if(objUsuario != null ){
-//                    salida.put("mensaje", "El empleado  con el ID: " + usuario.getIdUsuario() + " ha sido registrado con éxito");
-//                    salida.put("empleado", usuario);
-//                    return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.CREATED);
-//                }else {
-//                    salida.put("mensaje", "Error al registrar el empleado");
-//                    return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.BAD_REQUEST);
-//                }
-//            }
-//        } catch (DataAccessException e) {
-//            salida.put("mensaje", "Error al registrar el empleado");
-//            salida.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-//            return new ResponseEntity<HashMap<String, Object>>(salida, HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
      //ACTUALIZAR EMPLEADO
     @PutMapping("/actualizar/{id}")
     @ResponseBody
-    public ResponseEntity<HashMap<String, Object>> actualizar(@RequestBody Usuario usuario) {
+    public ResponseEntity<?> actualizar(@RequestBody Usuario usuario, @PathVariable Integer id){
         HashMap<String, Object> response = new HashMap<>();
         try {
-            Optional<Usuario> obj = usuarioService.buscarEmpleadoPorId(usuario.getIdUsuario());
-            if (obj.isPresent()) {
+            Usuario obj = usuarioService.buscarEmpleadoPorId(usuario.getIdUsuario());
+            if(obj != null){
                 Usuario objSalida = usuarioService.actualizarEmpleado(usuario);
-                if (objSalida == null) {
-                    response.put("mensaje", "No se actualizó correctamente");
-                    return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-                } else {
-                    response.put("mensaje","Se actualizó correctamente el ID " + usuario.getIdUsuario());
+                if(objSalida != null) {
+                    response.put("mensaje", "El empleado con el ID: " + usuario.getIdUsuario() + " ha sido actualizado con éxito");
+                    response.put("empleado", usuario);
                     return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.OK);
+                }else{
+                    response.put("mensaje","No se actualizó correctamente");
+                    return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
                 }
-            } else {
-                response.put("mensaje","No se encontró el ID " + usuario.getIdUsuario());
+            }else{
+                response.put("mensaje","El empleado con el ID: " + usuario.getIdUsuario() + " no existe");
                 return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
@@ -201,6 +177,26 @@ public class UsuarioController {
         return ResponseEntity.ok(response);
     }
         //ELIMINAR EMPLEADO
+    @DeleteMapping("/eliminar/{idUsuario}")
+    @ResponseBody
+    public ResponseEntity<?> eliminar(@PathVariable int idUsuario){
+        HashMap<String, Object> response = new HashMap<>();
+        try {
+            Usuario obj = usuarioService.buscarEmpleadoPorId(idUsuario);
+            if(obj != null){
+                usuarioService.eliminarEmpleado(idUsuario);
+                response.put("mensaje", "El empleado con el ID: " + idUsuario + " ha sido eliminado con éxito");
+                return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.OK);
+            }else{
+                response.put("mensaje","El empleado con el ID: " + idUsuario + " no existe");
+                return new ResponseEntity<HashMap<String, Object>>(response, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("mensaje","Error al eliminar " + e.getMessage());
+        }
+        return ResponseEntity.ok(response);
+    }
 
 //        @PostMapping("/upload")
 //        public ResponseEntity<?> upload(@RequestParam("archivo") MultipartFile archivo, @RequestParam("id") int idEmpleado){

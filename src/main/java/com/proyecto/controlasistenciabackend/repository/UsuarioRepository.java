@@ -19,5 +19,4 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     @Query("select e from Usuario e where e.nombre like ?1 ")
     public List<Usuario> listarPorNombre(String nombre);
 
-    public Usuario findByUsuario(String usuario);
 }

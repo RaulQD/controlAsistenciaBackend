@@ -43,20 +43,14 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public void eliminarEmpleado(int idEmpleado) {
-        usuarioRepository.deleteById(idEmpleado);
+    public void eliminarEmpleado(int idUsuario) {
+        usuarioRepository.deleteById(idUsuario);
     }
 
     @Override
-    public Optional<Usuario> buscarEmpleadoPorId(int idEmpleado) {
-        return usuarioRepository.findById(idEmpleado);
+    public Usuario buscarEmpleadoPorId(int idUsuario) {
+        return usuarioRepository.findById(idUsuario).orElse(null);
     }
-
-    @Override
-    public Usuario findByUsuario(String usuario) {
-        return usuarioRepository.findByUsuario(usuario);
-    }
-
 
     @Override
     public Optional<Usuario> buscarPorDni(String dni) {

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface CargoService {
 
-    public abstract List<Cargo> listarTodos();
+   public abstract List<Cargo> findAllCargo();
     public abstract Optional<Cargo> buscarPorId(int idCargo);
     public abstract Cargo insertarCargo(Cargo cargo);
     public abstract Cargo actualizarCargo(Cargo cargo);

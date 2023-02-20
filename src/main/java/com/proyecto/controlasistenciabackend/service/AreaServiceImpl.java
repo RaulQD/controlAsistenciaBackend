@@ -2,6 +2,7 @@ package com.proyecto.controlasistenciabackend.service;
 
 import com.proyecto.controlasistenciabackend.entity.Area;
 import com.proyecto.controlasistenciabackend.repository.AreaRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,9 +16,11 @@ public class AreaServiceImpl implements AreaService{
 
     @Autowired
     AreaRepository areaRepository;
+
+
     @Override
-    public List<Area> listarTodos() {
-        return  areaRepository.findAll();
+    public List<Area> findAllAreas() {
+        return areaRepository.findAllAreas();
     }
 
     @Override

@@ -17,8 +17,8 @@ public class CargoServiceImpl implements CargoService{
     CargoRepository cargoRepository;
 
     @Override
-    public List<Cargo> listarTodos() {
-        return  cargoRepository.findAll();
+    public List<Cargo> findAllCargo() {
+        return cargoRepository.findAllCargo();
     }
 
     @Override

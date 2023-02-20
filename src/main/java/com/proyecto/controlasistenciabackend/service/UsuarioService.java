@@ -26,7 +26,6 @@ public interface UsuarioService {
 
 
     //TODO:VALIDACIONES
-    public abstract Optional<Usuario> buscarEmpleadoPorId(int idUsuario);
-    public abstract Usuario findByUsuario(String usuario);
+    public abstract Usuario buscarEmpleadoPorId(int idUsuario);
 
 }

@@ -29,7 +29,7 @@ public class AreaController {
 
     @GetMapping("/listar")
     public ResponseEntity<List<Area>> listarAreas(){
-        List<Area> salida = areaService.listarTodos();
+        List<Area> salida = areaService.findAllAreas();
         return ResponseEntity.ok(salida);
     }
     @GetMapping("/buscar/{id}")
