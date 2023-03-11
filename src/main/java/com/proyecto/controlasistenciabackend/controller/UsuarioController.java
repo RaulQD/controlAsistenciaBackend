@@ -4,11 +4,16 @@ import com.proyecto.controlasistenciabackend.entity.Usuario;
 import com.proyecto.controlasistenciabackend.service.UsuarioService;
 import com.proyecto.controlasistenciabackend.util.AppSettings;
 
+import com.proyecto.controlasistenciabackend.util.Constantes;
+import com.proyecto.controlasistenciabackend.util.FunctionUtil;
 import org.apache.coyote.Response;
+import org.apache.poi.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,12 +21,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
 import java.util.*;
 
 @RestController
@@ -38,16 +46,7 @@ public class UsuarioController {
         List<Usuario> salida = usuarioService.listarEmpleados();
         return ResponseEntity.ok(salida);
     }
-    // Listar todos los empleados paginados
-//    @GetMapping("/empleados/page")
-//    public ResponseEntity<Page<Usuario>> listarEmpleadosPaginados(@RequestParam(defaultValue = "0") int page,
-//                                                                  @RequestParam(defaultValue = "10") int size,
-//                                                                  @RequestParam(defaultValue = "idEmpleado") String order)
-//    {
-//        Page<Usuario> empleado = usuarioService.paginas(PageRequest.of(page, size, Sort.by(order)));
-//
-//        return new ResponseEntity<Page<Usuario>>(empleado, HttpStatus.OK);
-//    }
+
     //LISTAR TODOS LOS EMPLEADOS PAGINADOS
     @GetMapping("/empleados/page/{page}")
     public Page<Usuario> listarEmpleadosPaginados(@PathVariable Integer page){
@@ -196,6 +195,32 @@ public class UsuarioController {
             response.put("mensaje","Error al eliminar " + e.getMessage());
         }
         return ResponseEntity.ok(response);
+    }
+
+    //DESCARGAR ARCHIVO EXCEL
+    @GetMapping("/descargarExcel")
+    public ResponseEntity<Resource> listaDescarga() {
+
+        log.info("Descargando archivo excel");
+        ByteArrayInputStream bytes = null;
+        InputStreamResource body = null;
+        String filename = null;
+        try {
+            List<Usuario> lista = usuarioService.listarEmpleados();
+            filename = "Planilla_listado_empleado__" + FunctionUtil.getDateNowInString() + ".xlsx";
+            bytes = usuarioService.exportarUsuarioExcel(lista);
+            body = new InputStreamResource(bytes);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
+                .header(HttpHeaders.SET_COOKIE, "fileDownload=true; path=/")
+                .header(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate")
+                .header(HttpHeaders.CONTENT_LENGTH, String.valueOf(bytes.available()))
+                .contentType(MediaType.parseMediaType(Constantes.TYPE_EXCEL))
+                .body(body);
     }
 
 //        @PostMapping("/upload")

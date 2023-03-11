@@ -45,6 +45,6 @@ public class Usuario implements Serializable {
     @JoinColumn(name = "id_cargo" )
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Cargo cargo;
-    private String estado;
 
+    private String estado;
 }

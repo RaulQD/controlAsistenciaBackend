@@ -19,4 +19,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     @Query("select e from Usuario e where e.nombre like ?1 ")
     public List<Usuario> listarPorNombre(String nombre);
 
+    @Query("select e from Usuario e where e.fechaRegistro between ?1 and ?2")
+    public List<Usuario> listarPorFechaRegistro(String fechaInicio, String fechaFin);
+
 }

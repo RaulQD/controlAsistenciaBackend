@@ -4,6 +4,7 @@ import com.proyecto.controlasistenciabackend.entity.Usuario;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,5 +28,6 @@ public interface UsuarioService {
 
     //TODO:VALIDACIONES
     public abstract Usuario buscarEmpleadoPorId(int idUsuario);
+    public abstract ByteArrayInputStream exportarUsuarioExcel(List<Usuario> lstUsuarios);
 
 }
