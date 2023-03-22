@@ -4,21 +4,25 @@ import com.proyecto.controlasistenciabackend.entity.Usuario;
 import com.proyecto.controlasistenciabackend.repository.AreaRepository;
 import com.proyecto.controlasistenciabackend.repository.CargoRepository;
 import com.proyecto.controlasistenciabackend.repository.UsuarioRepository;
+import com.proyecto.controlasistenciabackend.util.FunctionExcelUtil;
 import com.proyecto.controlasistenciabackend.util.FunctionUtil;
 import com.proyecto.controlasistenciabackend.util.UtilExcel;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.naming.directory.AttributeInUseException;
 import javax.print.AttributeException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.*;
 
 
@@ -62,11 +66,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     private static String[] HEADERS = {"CODIGO", "NOMBRE", "APELLIDO", "DNI", "CORREO","CONTACTO","DIRECCION","FECHA_NACIMIENTO","FECHA_REGISTRO","TARIFA","AREA", "CARGO","ESTADO"};
     private static String SHEET = "LISTADO";
     private static String TITLE = "LISTADO DE EMPLEADOS";
-    private static int[] HEADER_WIDTH = {3000,6000,6000,6000,8000,6000,6000,3000,3000,6000,7000,5000,5000,4000};
+    private static int[] HEADER_WIDTH = {3000,8000,6000,6000,8000,6000,8000,5000,5000,6000,7000,5000,5000,4000};
     @Override
     public ByteArrayInputStream exportarUsuarioExcel(List<Usuario> lstUsuarios) {
         try(Workbook excel = new XSSFWorkbook(); ByteArrayOutputStream outputStream = new ByteArrayOutputStream();) {
-
             //TODO:CREAR EL EXCEL
             Sheet hoja = excel.createSheet(SHEET);
             hoja.addMergedRegion(new CellRangeAddress(0,0,0,HEADER_WIDTH.length - 1));
@@ -157,7 +160,43 @@ public class UsuarioServiceImpl implements UsuarioService {
             throw new RuntimeException("Error al exportar el excel: " + e.getMessage());
         }
     }
+    private static String[] COLUMNAS_TEMAS = { "NOMBRE", "APELLIDO", "DNI", "CORREO","CONTACTO","DIRECCION","FECHA_NACIMIENTO","TARIFA","AREA", "CARGO"};
+    private static CellType[][] TIPOS_DATOS ={{CellType.STRING},{CellType.STRING},{CellType.NUMERIC},
+                                                {CellType.STRING,CellType.NUMERIC},{CellType.NUMERIC},{CellType.STRING,CellType.NUMERIC},
+                                                {CellType.STRING},{CellType.NUMERIC},{CellType.STRING},{CellType.STRING}};
+    @Transactional
+    @Override
+    public Map<String, Object> importarUsuarioExcel(MultipartFile file) {
+        Map<String, Object> response = new HashMap<>();
+        Workbook workbook =null;
+        InputStream inputStream = null;
+        try{
+            inputStream = file.getInputStream();
+            workbook = new XSSFWorkbook(inputStream);
+            Sheet sheet = workbook.getSheetAt(0);
+            boolean noEsPrimero = false;
 
+            response = FunctionExcelUtil.validaCabecera(COLUMNAS_TEMAS, sheet);
+            if(response.size() > 0){
+                return response;
+            }
+            response = FunctionExcelUtil.validaTipoDatosArreglo(TIPOS_DATOS, sheet);
+            if(response.size() > 0 ){
+                return response;
+            }
+            List<Usuario> lstUsuarios = new ArrayList<Usuario>();
+            String celdaNombre = null, celdaApellido = null, celdaDni = null, celdaCorreo = null, celdaContacto = null,
+                    celdaDireccion = null, celdaFechaNacimiento = null, celdaTarifa = null, celdaArea = null, celdaCargo = null;
+
+        }catch(Exception e){
+        e.printStackTrace();
+        throw new RuntimeException("Error al importar el excel: " + e.getMessage());
+            }
+        return null;
+    }
+
+
+    @Transactional
     @Override
     public Optional<Usuario> buscarPorDni(String dni) {
         return usuarioRepository.findByDni(dni);

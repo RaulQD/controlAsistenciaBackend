@@ -45,6 +45,31 @@ public class Usuario implements Serializable {
     @JoinColumn(name = "id_cargo" )
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Cargo cargo;
-
     private String estado;
+    private String password;
+
+    @ManyToMany
+    @JoinTable(name = "usuario_has_rol", joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_rol"))
+    private Set<Rol> roles = new HashSet<>();
+
+    public Usuario(){
+
+    }
+
+    public Usuario(String nombre, String apellido, String dni, String correo, String contacto, String direccion, Date fechaNacimiento, Date fechaRegistro, double tarifa, Area area, Cargo cargo, String estado, String password) {
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.dni = dni;
+        this.correo = correo;
+        this.contacto = contacto;
+        this.direccion = direccion;
+        this.fechaNacimiento = fechaNacimiento;
+        this.fechaRegistro = fechaRegistro;
+        this.tarifa = tarifa;
+        this.area = area;
+        this.cargo = cargo;
+        this.estado = estado;
+        this.password = password;
+    }
 }

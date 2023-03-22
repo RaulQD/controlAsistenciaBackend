@@ -3,9 +3,11 @@ package com.proyecto.controlasistenciabackend.service;
 import com.proyecto.controlasistenciabackend.entity.Usuario;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface UsuarioService {
@@ -28,6 +30,9 @@ public interface UsuarioService {
 
     //TODO:VALIDACIONES
     public abstract Usuario buscarEmpleadoPorId(int idUsuario);
+
+    //TODO:EXPORTAR E IMPORTAR
     public abstract ByteArrayInputStream exportarUsuarioExcel(List<Usuario> lstUsuarios);
+    public abstract Map<String, Object> importarUsuarioExcel(MultipartFile file);
 
 }

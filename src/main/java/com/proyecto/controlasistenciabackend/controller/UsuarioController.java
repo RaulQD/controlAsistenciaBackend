@@ -28,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.util.*;
@@ -222,7 +223,11 @@ public class UsuarioController {
                 .contentType(MediaType.parseMediaType(Constantes.TYPE_EXCEL))
                 .body(body);
     }
-
+    @PostMapping("/importExcel")
+    public ResponseEntity<?> importExcel(@RequestParam("file") MultipartFile file){
+        Map<String, Object> response = usuarioService.importarUsuarioExcel(file);
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+    }
 //        @PostMapping("/upload")
 //        public ResponseEntity<?> upload(@RequestParam("archivo") MultipartFile archivo, @RequestParam("id") int idEmpleado){
 //        HashMap<String,Object> response = new HashMap<>();
