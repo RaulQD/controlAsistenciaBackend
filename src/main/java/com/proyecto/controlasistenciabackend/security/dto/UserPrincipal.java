@@ -1,4 +1,4 @@
-package com.proyecto.controlasistenciabackend.security;
+package com.proyecto.controlasistenciabackend.security.dto;
 
 import com.proyecto.controlasistenciabackend.entity.Usuario;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,28 +10,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserPrincipal implements UserDetails {
-
     private String nombre;
-    private String dni;
+    private String login;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
-    private UserPrincipal(String nombre, String dni, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(String nombre, String login, String password, Collection<? extends GrantedAuthority> authorities) {
         this.nombre = nombre;
-        this.dni = dni;
+        this.login = login;
         this.password = password;
         this.authorities = authorities;
     }
 
     public static UserPrincipal build(Usuario usuario){
         List<GrantedAuthority> authorities = usuario.getRoles().stream().map(
-                role -> new SimpleGrantedAuthority(role.getNombre_rol().name())).collect(Collectors.toList());
-        return new UserPrincipal(usuario.getNombre(), usuario.getDni(), usuario.getPassword(), authorities);
+                role -> new SimpleGrantedAuthority(role.getRolNombre().name())).collect(Collectors.toList());
+        return new UserPrincipal(usuario.getNombre(), usuario.getUsuario(), usuario.getPassword(), authorities);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-            return authorities;
+        return authorities;
     }
 
     @Override
@@ -41,7 +40,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return dni;
+        return login;
     }
 
     @Override
@@ -62,5 +61,13 @@ public class UserPrincipal implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 }

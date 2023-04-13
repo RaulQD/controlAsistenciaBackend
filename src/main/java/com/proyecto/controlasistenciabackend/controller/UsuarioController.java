@@ -1,13 +1,14 @@
 package com.proyecto.controlasistenciabackend.controller;
 
+import com.proyecto.controlasistenciabackend.entity.Rol;
 import com.proyecto.controlasistenciabackend.entity.Usuario;
+import com.proyecto.controlasistenciabackend.entity.enums.RolNombre;
+import com.proyecto.controlasistenciabackend.service.RolService;
 import com.proyecto.controlasistenciabackend.service.UsuarioService;
 import com.proyecto.controlasistenciabackend.util.AppSettings;
 
 import com.proyecto.controlasistenciabackend.util.Constantes;
 import com.proyecto.controlasistenciabackend.util.FunctionUtil;
-import org.apache.coyote.Response;
-import org.apache.poi.util.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,8 +41,12 @@ import java.util.*;
 public class UsuarioController {
 
     private static Logger log = LoggerFactory.getLogger(UsuarioController.class);
-        @Autowired
-        UsuarioService usuarioService;
+    @Autowired
+    UsuarioService usuarioService;
+    @Autowired
+    RolService rolService;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @GetMapping("/listar")
     public ResponseEntity<List<Usuario>> listarTodos(){
@@ -123,13 +129,13 @@ public class UsuarioController {
                     usuario.setFechaRegistro(new Date());
                     usuario.setEstado("Activo");
                     usuario.setIdUsuario(0);
-//                    usuario.setContrasena(passwordEncoder.encode(usuario.getContrasena()));
-//                    Set<Rol> roles = new HashSet<>();
-//                    roles.add(rolService.findByRolName(RolName.ROLE_USER).get());
-//                    if (usuario.getRoles().contains("admin")) {
-//                        roles.add(rolService.findByRolName(RolName.ROLE_ADMIN).get());
-//                    }
-//                    usuario.setRoles(roles);
+                    usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+                    Set<Rol> roles = new HashSet<>();
+                    roles.add(rolService.getByRolNombre(RolNombre.ROLE_USER).get());
+                    if (usuario.getRoles().contains("admin")) {
+                        roles.add(rolService.getByRolNombre(RolNombre.ROLE_ADMIN).get());
+                    }
+                    usuario.setRoles(roles);
                     Usuario objUsuario = usuarioService.insertarUsuario(usuario);
                     if (objUsuario != null) {
                         salida.put("mensaje", "El empleado  con el ID: " + usuario.getIdUsuario() + " ha sido registrado con éxito");

@@ -50,6 +50,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
     @Override
     public Usuario insertarUsuario(Usuario usuario){
+        usuario.setUsuario(usuario.getDni());
         return usuarioRepository.save(usuario);
     }
 
@@ -200,6 +201,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Optional<Usuario> buscarPorDni(String dni) {
         return usuarioRepository.findByDni(dni);
+    }
+
+    public Optional<Usuario> buscarPorUsuario(String usuario){
+        return usuarioRepository.findByUsuario(usuario);
     }
     @Override
     @Transactional(readOnly = true)

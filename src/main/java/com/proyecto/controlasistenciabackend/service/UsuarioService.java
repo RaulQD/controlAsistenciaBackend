@@ -18,6 +18,7 @@ public interface UsuarioService {
     //TODO:BUSCADORES
     public abstract List<Usuario> listarPorNombre(String nombre);
     public abstract Optional<Usuario> buscarPorDni(String dni);
+    public Optional<Usuario> buscarPorUsuario(String usuario);
 
     //TODO:INSERTADORES
     public Usuario insertarUsuario(Usuario usuario);

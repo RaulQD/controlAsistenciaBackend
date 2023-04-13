@@ -1,6 +1,6 @@
 package com.proyecto.controlasistenciabackend.security.jwt;
 
-import com.proyecto.controlasistenciabackend.security.UserPrincipal;
+import com.proyecto.controlasistenciabackend.security.dto.UserPrincipal;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -26,7 +26,7 @@ public class JwtProvider {
     private int expiration;
 
     //GENERATE TOKEN CORRESPONDIENTE A UN USUARIO MÁS SU EXPIRACIÓN
-    private String generateToken(Authentication authentication){
+    public String generateToken(Authentication authentication){
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         logger.info("secret: " + secret);
         //TODO: GENERATE TOKEN

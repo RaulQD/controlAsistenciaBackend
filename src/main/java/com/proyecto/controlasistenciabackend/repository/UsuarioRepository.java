@@ -16,6 +16,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     
     public abstract Optional<Usuario> findByDni(String dni);
+
+    Optional<Usuario> findByUsuario(String usuario);
     @Query("select e from Usuario e where e.nombre like ?1 ")
     public List<Usuario> listarPorNombre(String nombre);
 

@@ -1,27 +1,30 @@
 package com.proyecto.controlasistenciabackend.entity;
 
+import com.proyecto.controlasistenciabackend.entity.enums.RolNombre;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
 
 @Entity
 @Table(name = "rol")
 @Getter
 @Setter
-public class Rol {
+public class Rol implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idRol;
-    @Enumerated(EnumType.STRING)
-    private ERol nombre_rol;
 
-    public Rol(){
+    @Enumerated(EnumType.STRING)
+    private RolNombre rolNombre;
+
+    public Rol() {
 
     }
 
-    public Rol(int idRol, ERol nombre_rol) {
-        this.idRol = idRol;
-        this.nombre_rol = nombre_rol;
+    public Rol(RolNombre rolNombre) {
+        this.rolNombre = rolNombre;
     }
 }

@@ -46,6 +46,7 @@ public class Usuario implements Serializable {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Cargo cargo;
     private String estado;
+    private String usuario;
     private String password;
 
     @ManyToMany
@@ -57,7 +58,7 @@ public class Usuario implements Serializable {
 
     }
 
-    public Usuario(String nombre, String apellido, String dni, String correo, String contacto, String direccion, Date fechaNacimiento, Date fechaRegistro, double tarifa, Area area, Cargo cargo, String estado, String password) {
+    public Usuario(String nombre, String apellido, String dni, String correo, String contacto, String direccion, Date fechaNacimiento, Date fechaRegistro, double tarifa, Area area, Cargo cargo, String estado, String usuario, String password) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
@@ -70,6 +71,7 @@ public class Usuario implements Serializable {
         this.area = area;
         this.cargo = cargo;
         this.estado = estado;
+        this.usuario = usuario;
         this.password = password;
     }
 }

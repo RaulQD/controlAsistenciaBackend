@@ -21,7 +21,7 @@ public class JwtEntryPoint implements AuthenticationEntryPoint {
     //MÉTODO QUE SE EJECUTA CUANDO EL USUARIO NO ESTÁ AUTENTICADO O NO ESTA AUTORIZADO PARA ACCEDER A UN RECURSO
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        logger.error("Unauthorized error: {}, en el commence" + authException.getMessage());
+        logger.error("Unauthorized error: {}, en el commence " + authException.getMessage());
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ERROR_MESSAGE);
     }
 }
